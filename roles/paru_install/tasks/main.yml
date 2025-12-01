@@ -5,14 +5,13 @@
       - base-devel
     state: present
     update_cache: true
-- name: Ensure paru-bin repo exists
+- name: Ensure paru-bin repo exists # noqa latest[git]
   become: false
   ansible.builtin.git:
     repo: "https://aur.archlinux.org/paru-bin.git"
     dest: "/tmp/paru-bin"
     depth: 1
     update: true
-    version: "{{ paru_install_repo_hash }}"
 - name: Build paru package
   become: false
   ansible.builtin.command: "makepkg -sf --noconfirm"

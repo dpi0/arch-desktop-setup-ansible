@@ -47,9 +47,7 @@
     - firewall
     - pacman_config
     - locale
-    - role: paru_install
-      vars:
-        paru_install_repo_hash: "2a55429afbec4fceeb2cef843245105307444d2"
+    - paru_install
   handlers:
     - name: Restart sshd
       ansible.builtin.service:
