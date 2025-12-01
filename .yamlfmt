@@ -1,0 +1,5 @@
+---
+formatter:
+  type: basic          # default formatter
+  indent: 2            # standard 2-space indent (good for Ansible)
+  include_document_start: false

@@ -1,0 +1,27 @@
+---
+extends: default
+
+rules:
+  # Avoid annoying false-positives on comment indentation
+  comments-indentation: false
+
+  # Don't require '---' at top of every YAML file
+  document-start: disable
+
+  # Relaxed max line length; adjust if you prefer stricter
+  line-length:
+    max: 160
+
+  # Compatible spacing inside braces
+  braces:
+    min-spaces-inside: 0
+    max-spaces-inside: 1
+
+  # Safer handling of octal-like values
+  octal-values:
+    forbid-implicit-octal: true
+    forbid-explicit-octal: true
+
+  comments:
+    # One space before inline comments (works well with other tools)
+    min-spaces-from-content: 1
