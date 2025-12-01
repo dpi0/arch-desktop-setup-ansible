@@ -11,10 +11,5 @@
     dest: "{{ user_home }}/.local/share/fonts/custom"
     version: "{{ fonts_repo_commit_hash }}"
     update: true
-  register: fonts_custom_dir
-- name: Rebuild font cache when custom fonts changed
-  become: false
-  ansible.builtin.command: >
-    fc-cache -f "{{ user_home }}/.local/share/fonts/custom"
-
-  when: fonts_custom_dir.changed
+  register: font_install_fonts_custom_dir
+  notify: Rebuild font cache

@@ -53,6 +53,12 @@
       ansible.builtin.service:
         name: sshd
         state: restarted
+    - name: Rebuild font cache
+      become: false
+      ansible.builtin.command: >
+        fc-cache -f "{{ user_home }}/.local/share/fonts/custom"
+
+      changed_when: false
   tasks:
     - name: Ensure FREETYPE_PROPERTIES is set in /etc/environment
       ansible.builtin.lineinfile:
