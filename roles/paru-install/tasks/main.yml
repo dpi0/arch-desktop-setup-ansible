@@ -1,0 +1,38 @@
+- name: Ensure build dependencies for AUR are installed
+  community.general.pacman:
+    name:
+      - git
+      - base-devel
+    state: present
+    update_cache: true
+- name: Ensure paru-bin repo exists
+  become: false
+  ansible.builtin.git:
+    repo: "https://aur.archlinux.org/paru-bin.git"
+    dest: "/tmp/paru-bin"
+    depth: 1
+    update: true
+- name: Build paru package
+  become: false
+  ansible.builtin.command: "makepkg -sf --noconfirm"
+  args:
+    chdir: "/tmp/paru-bin"
+  register: makepkg_result
+- name: Find built paru package
+  ansible.builtin.find:
+    paths: /tmp/paru-bin
+    patterns: "paru-bin-*.pkg.tar.zst"
+    file_type: file
+  register: paru_pkg
+- name: Fail if paru package was not built
+  ansible.builtin.fail:
+    msg: "Paru package not found in /tmp/paru-bin"
+  when: paru_pkg.matched | default(0) | int == 0
+- name: Set paru package path fact
+  ansible.builtin.set_fact:
+    paru_pkg_path: "{{ paru_pkg.files[0].path }}"
+  when: paru_pkg.matched | default(0) | int > 0
+- name: Install built paru package via pacman
+  community.general.pacman:
+    name: "{{ paru_pkg_path }}"
+    state: present

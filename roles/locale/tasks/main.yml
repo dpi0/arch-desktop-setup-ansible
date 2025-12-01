@@ -1,0 +1,24 @@
+- name: Ensure /etc/locale.conf has LANG set
+  ansible.builtin.lineinfile:
+    path: /etc/locale.conf
+    regexp: "^LANG="
+    line: "LANG=en_US.UTF-8"
+    create: true
+    state: present
+    owner: root
+    group: root
+    mode: "0644"
+- name: Ensure /etc/vconsole.conf has KEYMAP set
+  ansible.builtin.lineinfile:
+    path: /etc/vconsole.conf
+    regexp: "^KEYMAP="
+    line: "KEYMAP=us"
+    create: true
+    state: present
+    owner: root
+    group: root
+    mode: "0644"
+- name: Generate locales
+  community.general.locale_gen:
+    name: "en_US.UTF-8"
+    state: present

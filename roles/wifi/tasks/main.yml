@@ -1,0 +1,20 @@
+- name: Configure Wi-Fi connection static IPv4 and DNS
+  community.general.nmcli:
+    conn_name: "{{ ssid }}"
+    # type: wifi
+    # ifname: "wlp3s0"
+    ip4: "{{ ip }}"
+    gw4: "{{ gateway }}"
+    method4: manual
+    dns4:
+      - "{{ dns }}"
+    dns4_ignore_auto: true
+    state: present
+- name: Bring Wi-Fi connection down
+  community.general.nmcli:
+    conn_name: "{{ ssid }}"
+    state: down
+- name: Bring Wi-Fi connection up
+  community.general.nmcli:
+    conn_name: "{{ ssid }}"
+    state: up

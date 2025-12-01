@@ -1,0 +1,107 @@
+- name: Enable UFW
+  community.general.ufw:
+    state: enabled
+- name: Set default policy - allow outgoing
+  community.general.ufw:
+    direction: outgoing
+    policy: allow
+- name: Set default policy - deny incoming
+  community.general.ufw:
+    direction: incoming
+    policy: deny
+- name: Set default policy - allow routed
+  community.general.ufw:
+    direction: routed
+    policy: allow
+# SSH / Web / Testing
+- name: Limit SSH (22/tcp)
+  community.general.ufw:
+    rule: limit
+    port: "22"
+    proto: tcp
+    comment: "Limit SSH"
+- name: Allow HTTP (80/tcp)
+  community.general.ufw:
+    rule: allow
+    port: "80"
+    proto: tcp
+    comment: "HTTP"
+- name: Allow HTTPS (443/tcp)
+  community.general.ufw:
+    rule: allow
+    port: "443"
+    proto: tcp
+    comment: "HTTPS"
+- name: Allow testing port (1234/tcp)
+  community.general.ufw:
+    rule: allow
+    port: "1234"
+    proto: tcp
+    comment: "Testing"
+# LocalSend
+- name: Allow LocalSend in 53317 (any proto, any IP family)
+  community.general.ufw:
+    rule: allow
+    port: "53317"
+    direction: in
+    comment: "Localsend"
+- name: Allow LocalSend out 53317 (any proto, any IP family)
+  community.general.ufw:
+    rule: allow
+    port: "53317"
+    direction: out
+    comment: "Localsend"
+- name: Allow LocalSend IPv6 in TCP 53317
+  community.general.ufw:
+    rule: allow
+    port: "53317"
+    proto: tcp
+    direction: in
+    comment: "Localsend (v6)"
+- name: Allow LocalSend IPv6 in UDP 53317
+  community.general.ufw:
+    rule: allow
+    port: "53317"
+    proto: udp
+    direction: in
+    comment: "Localsend (v6)"
+- name: Allow LocalSend IPv6 out TCP 53317
+  community.general.ufw:
+    rule: allow
+    port: "53317"
+    proto: tcp
+    direction: out
+    comment: "Localsend (v6)"
+- name: Allow LocalSend IPv6 out UDP 53317
+  community.general.ufw:
+    rule: allow
+    port: "53317"
+    proto: udp
+    direction: out
+    comment: "Localsend (v6)"
+# KDE Connect (1714–1764 TCP/UDP)
+- name: Allow KDE Connect TCP range
+  community.general.ufw:
+    rule: allow
+    port: "1714:1764"
+    proto: tcp
+    comment: "KDE Connect TCP"
+- name: Allow KDE Connect UDP range
+  community.general.ufw:
+    rule: allow
+    port: "1714:1764"
+    proto: udp
+    comment: "KDE Connect UDP"
+# KVM on virbr0
+- name: Allow KVM traffic in on virbr0
+  community.general.ufw:
+    rule: allow
+    direction: in
+    interface: virbr0
+    comment: "KVM in on virbr0"
+- name: Allow KVM traffic out on virbr0
+  community.general.ufw:
+    rule: allow
+    direction: out
+    interface: virbr0
+    comment: "KVM out on virbr0"

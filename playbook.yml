@@ -1,0 +1,100 @@
+- name: Arch Desktop Setup
+  hosts: localhost
+  connection: local
+  become: true
+  vars:
+    hostname: "titan"
+    timezone: "Asia/Kolkata"
+  vars_files:
+    - vars/packages.yml
+    - group_vars/localhost/secrets.yml
+  pre_tasks:
+    - name: Install official repository packages
+      community.general.pacman:
+        name: "{{ packages }}"
+        state: present
+        update_cache: true
+    - name: Ensure user dpi0 exists and is in required groups
+      ansible.builtin.user:
+        name: dpi0
+        shell: /usr/bin/zsh
+        password: "{{ primary_user_password }}" # VAULT
+        create_home: true
+        groups:
+          - wheel
+          - input
+          - docker
+          - libvirt
+          - kvm
+        append: true
+    - name: Set non-root home
+      become: false
+      ansible.builtin.set_fact:
+        user_home: "/home/dpi0"
+  roles:
+    - role: font-install
+      vars:
+        fonts_repo_url: "https://github.com/dpi0/fonts"
+        fonts_repo_commit_hash: "e4dc6e5a4196d2422ade7c14465e256b55eff379"
+    - ssh-harden
+    - role: wifi
+      vars:
+        ssid: "homenetwork5ghz"
+        ip: "10.0.0.20/24"
+        gateway: "10.0.0.1"
+        dns: "9.9.9.9"
+    - power-button
+    - firewall
+    - pacman-config
+    - locale
+    - paru-install
+  handlers:
+    - name: Restart sshd
+      ansible.builtin.service:
+        name: sshd
+        state: restarted
+  tasks:
+    - name: Ensure FREETYPE_PROPERTIES is set in /etc/environment
+      ansible.builtin.lineinfile:
+        path: /etc/environment
+        regexp: '^FREETYPE_PROPERTIES='
+        line: 'FREETYPE_PROPERTIES="cff:no-stem-darkening=0 autofitter:no-stem-darkening=0"'
+        create: true
+        state: present
+        insertafter: EOF
+        mode: "0644"
+        owner: root
+        group: root
+    - name: Apply hostname
+      ansible.builtin.hostname:
+        name: "{{ hostname }}"
+    - name: Configure system timezone and hardware clock
+      community.general.timezone:
+        name: "{{ timezone }}"
+        hwclock: "local"
+    - name: Add static host entry
+      lineinfile:
+        path: /etc/hosts
+        line: "10.0.0.10 homelab"
+        state: present
+    - name: Lock the root account
+      ansible.builtin.user:
+        name: root
+        password_lock: true
+    - name: Enable and start required systemd units
+      ansible.builtin.systemd:
+        name: "{{ item }}"
+        enabled: true
+        state: started
+      loop:
+        - fstrim.timer
+        - paccache.timer
+        - greetd.service
+        - docker.service
+        - systemd-timesyncd.service
+    - name: Apply MIME defaults
+      become: true
+      become_user: "{{ desktop_user }}"
+      script: files/set-mime-defaults.sh
+      changed_when: false
+  # TODO: dotfiles integration

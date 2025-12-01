@@ -1,0 +1,20 @@
+- name: Ensure base fonts directory exists
+  become: false
+  ansible.builtin.file:
+    path: "{{ user_home }}/.local/share/fonts"
+    state: directory
+    mode: "0755"
+- name: Checkout custom fonts repository
+  become: false
+  ansible.builtin.git:
+    repo: "{{ fonts_repo_url }}"
+    dest: "{{ user_home }}/.local/share/fonts/custom"
+    version: "{{ fonts_repo_commit_hash }}"
+    update: true
+  register: fonts_custom_dir
+- name: Rebuild font cache when custom fonts changed
+  become: false
+  ansible.builtin.command: >
+    fc-cache -f "{{ user_home }}/.local/share/fonts/custom"
+
+  when: fonts_custom_dir.changed
