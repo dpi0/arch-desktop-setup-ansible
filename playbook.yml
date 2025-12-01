@@ -32,22 +32,22 @@
       ansible.builtin.set_fact:
         user_home: "/home/dpi0"
   roles:
-    - role: font-install
+    - role: font_install
       vars:
         fonts_repo_url: "https://github.com/dpi0/fonts"
         fonts_repo_commit_hash: "e4dc6e5a4196d2422ade7c14465e256b55eff379"
-    - ssh-harden
+    - ssh_harden
     - role: wifi
       vars:
         ssid: "homenetwork5ghz"
         ip: "10.0.0.20/24"
         gateway: "10.0.0.1"
         dns: "9.9.9.9"
-    - power-button
+    - power_button
     - firewall
-    - pacman-config
+    - pacman_config
     - locale
-    - paru-install
+    - paru_install
   handlers:
     - name: Restart sshd
       ansible.builtin.service:
