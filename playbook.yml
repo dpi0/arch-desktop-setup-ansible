@@ -77,7 +77,6 @@
     - name: Configure system timezone and hardware clock
       community.general.timezone:
         name: "{{ timezone }}"
-        hwclock: "local"
     - name: Add static host entry
       lineinfile:
         path: /etc/hosts
