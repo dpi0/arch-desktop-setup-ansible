@@ -98,8 +98,7 @@
         - docker.service
         - systemd-timesyncd.service
     - name: Apply MIME defaults
-      become: true
-      become_user: "{{ desktop_user }}"
+      become: false
       script: files/set-mime-defaults.sh
       changed_when: false
   # TODO: dotfiles integration
